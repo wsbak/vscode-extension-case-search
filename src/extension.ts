@@ -106,7 +106,7 @@ function getInitialValue(context: ExtensionContext) {
 }
 
 export function activate(context: ExtensionContext) {
-  context.subscriptions.push(commands.registerCommand('case-search.showSearchBox', async () => {
+  context.subscriptions.push(commands.registerCommand('case-search-2.showSearchBox', async () => {
 
     const quickPick = window.createQuickPick();
     quickPick.items = quickPickItems;
