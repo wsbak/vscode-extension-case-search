@@ -16,7 +16,7 @@ const quickPickItems:     QuickPickItem[] = [ kebabCaseQPI,
                                               capitalCaseQPI,
                                               pathCaseQPI ];
 
-function transformQuery2RegExp(query: string, scope: string) {
+function transformQuery2RegExp(query: string, scope: string): string | undefined {
   switch(scope) {
     case "kebab-case":
       return paramCase(query);
@@ -37,9 +37,9 @@ function transformQuery2RegExp(query: string, scope: string) {
 
 // build regex query with all cases selected
 function buildRegexQuery(query: string, selectedItems: readonly QuickPickItem[]): string {
-  let queries: String[] = [];
-  for (let item of selectedItems) {
-    let queryScope = transformQuery2RegExp(query, item.label) || query;
+  const queries: String[] = [];
+  for (const item of selectedItems) {
+    const queryScope = transformQuery2RegExp(query, item.label) || query;
     queries.push(queryScope);
   }
 
@@ -56,8 +56,8 @@ function removeDuplicates<T>(array: T[]): T[] {
 
 // Read selectedItems (cases) from context.workspaceState
 function readSelectedItems(context: ExtensionContext): QuickPickItem[] {
-  let selectedItems: QuickPickItem[] = [];
-  for (let quickPickItem of quickPickItems) {
+  const selectedItems: QuickPickItem[] = [];
+  for (const quickPickItem of quickPickItems) {
     if (context.workspaceState.get<boolean>(quickPickItem.label, false) === true) {
       selectedItems.push(quickPickItem);
     }
@@ -68,14 +68,14 @@ function readSelectedItems(context: ExtensionContext): QuickPickItem[] {
 
 // Save selectedItems (cases) into context.workspaceState
 function saveSelectedItems(context: ExtensionContext, selectedItems: readonly QuickPickItem[]) {
-  for (let quickPickItem of quickPickItems) {
-    let selected = selectedItems.findIndex(item=> item === quickPickItem) >= 0;
+  for (const quickPickItem of quickPickItems) {
+    const selected = selectedItems.findIndex(item=> item === quickPickItem) >= 0;
     context.workspaceState.update(quickPickItem.label, selected);
     // console.log("previouslySelectedItems", previouslySelectedItems);
   }  
 }
 
-function getSelectedText() {
+function getSelectedText(): string | undefined {
   const editor = window.activeTextEditor;
   const selection = editor?.selection;
   const selectedText = editor?.document.getText(selection);
@@ -83,7 +83,7 @@ function getSelectedText() {
 }
 
 // Get the initial value to search
-function getInitialValue(context: ExtensionContext) {
+function getInitialValue(context: ExtensionContext): string {
   const lastSearchedValue = context.workspaceState.get<string>("lastSearchedValue", "");
   const selectedText = getSelectedText();
 
@@ -123,8 +123,8 @@ export function activate(context: ExtensionContext) {
         context.workspaceState.update("lastSelectedText", getSelectedText());
 
         // If no selectedItems, we take all quickPickItems
-        let items = quickPick.selectedItems.length <= 0 ? quickPickItems : quickPick.selectedItems;
-        let query = buildRegexQuery(quickPick.value, items);
+        const items = quickPick.selectedItems.length <= 0 ? quickPickItems : quickPick.selectedItems;
+        const query = buildRegexQuery(quickPick.value, items);
         // console.log("query", query);
 
         commands.executeCommand("workbench.action.findInFiles", {
